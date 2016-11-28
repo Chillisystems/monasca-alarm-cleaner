@@ -45,3 +45,6 @@ Statsd:
 ## TODO
 
     * Add tests
+    * Configuration file / command line arguments
+    * Proper Logging
+    * Metrics definitions cleanup ?

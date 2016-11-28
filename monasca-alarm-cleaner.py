@@ -12,9 +12,11 @@ CLOUD_NAME = 'cloud_v3_api'
 API_VERSION = '2_0'
 MONASCA_URL = 'http://monasca-api-1:8070/v{}'.format(API_VERSION.replace('_', '.'))
 
+log = logging.getLogger(__name__)
+
 class MonascaCleaner(object):
     '''
-
+        Monasca Leftover Alarms cleaner class
     '''
     def __init__(self):
         self.cloud = shade.OpenStackCloud(cloud=CLOUD_NAME)
@@ -26,7 +28,12 @@ class MonascaCleaner(object):
         ''' Remove alarms from monasca which are in UNDEERMINED state
             and do not belong to any active VM '''
 
-        alarms = self.list_alarms()
+        alarms_to_delete = self.list_alarms()
+
+        for alarm in alarms_to_delete:
+            log.info("Removing alarm id: %s with state %s",
+                     alarm.get('alarm_id'), alarm.get('state'))
+            self.client.alarms.delete(**{'alarm_id': alarm.get('alarm_id')})
 
     def list_alarms(self):
         ''' Get list of alarms in undetermined state, if this alarm has and
@@ -95,8 +102,9 @@ class MonascaCleaner(object):
 def main():
     mon = MonascaCleaner()
 
+    log.info("Cleaning alarms: ")
     #print mon.client.alarms.list()
-    print mon.list_alarms()
+    mon.clean_alarms()
 
 
 
