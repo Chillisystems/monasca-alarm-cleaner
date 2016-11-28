@@ -1,0 +1,4 @@
+shade
+python-keystoneclient
+python-monascaclient
+
