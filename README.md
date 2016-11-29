@@ -1,4 +1,4 @@
-# Monasca alarm cleaner
+# Monasca alarm cleaner [![Build Status](https://travis-ci.org/Chillisystems/monasca-alarm-cleaner.svg?branch=master)](https://travis-ci.org/Chillisystems/monasca-alarm-cleaner)
 
 This tool will clean leftover alarms from monasca after vm removal. This will work only for
 alarms whith _resource_id_ defined. So best option is add _resource_id_ entry to your
