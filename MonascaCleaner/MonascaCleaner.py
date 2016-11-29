@@ -20,14 +20,14 @@ class MonascaCleaner(object):
         ''' Remove alarms from monasca which are in UNDEERMINED state
             and do not belong to any active VM '''
 
-        alarms_to_delete = self.list_alarms()
+        alarms_to_delete = self.list_vm_undetermined_alarms()
 
         for alarm in alarms_to_delete:
             log.info("Removing alarm id: %s with state %s",
                      alarm.get('alarm_id'), alarm.get('state'))
             self.client.alarms.delete(**{'alarm_id': alarm.get('alarm_id')})
 
-    def list_alarms(self):
+    def list_vm_undetermined_alarms(self):
         ''' Get list of alarms in undetermined state, if this alarm has and
             dimension assigned resource_id(nova vm id) we add it to vm_ids list.
 
@@ -42,7 +42,7 @@ class MonascaCleaner(object):
 
         for alarm in data:
             if alarm.get('state') == 'UNDETERMINED':
-                vm_ids = self._list_resource_ids(alarm.get('metrics', []), vms)
+                vm_ids = self._list_filter_resource_ids(alarm.get('metrics', []), vms)
                 if vm_ids:
                     alarm_info.append({'alarm_id': alarm.get('id'),
                                        'state': alarm.get('state'),
@@ -57,7 +57,7 @@ class MonascaCleaner(object):
             search_opts={'all_tenants': 1}, limit=-1))
 
     @classmethod
-    def _list_resource_ids(cls, metrics, active_vm_ids=[]):
+    def _list_filter_resource_ids(cls, metrics, active_vm_ids=[]):
         '''
             Return dimension resource ids for metrics which
                 - component is 'vm'
