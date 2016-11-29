@@ -6,6 +6,7 @@ import monascaclient.exc as exc
 
 log = logging.getLogger(__name__)
 
+
 class MonascaCleaner(object):
     '''
         Monasca Leftover Alarms cleaner class
@@ -73,8 +74,8 @@ class MonascaCleaner(object):
                                                       resource_id not in active_vm_ids):
                 ids.append(resource_id)
         return ids
-        #return {get_dim(res, 'resource_id') for res in metrics
-         #       if get_dim(res, 'component') == 'vm'}
+#       return {get_dim(res, 'resource_id') for res in metrics
+#           if get_dim(res, 'component') == 'vm'}
 
     @classmethod
     def _get_monasca_client(cls, api_ver, monasca_url, auth_token):
@@ -86,6 +87,7 @@ class MonascaCleaner(object):
         logging.basicConfig(
             format="%(levelname)s (%(module)s:%(lineno)d) %(message)s",
             level=log_lvl)
+
     @classmethod
     def _setup_verbose(cls, verbose):
         if verbose:
