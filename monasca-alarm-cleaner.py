@@ -1,3 +1,6 @@
+'''
+    Simple script for cleaning up monasca alarms left after removed/destroyed VMs.
+'''
 import logging
 
 from MonascaCleaner.MonascaCleaner import MonascaCleaner
