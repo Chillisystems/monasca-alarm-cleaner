@@ -9,6 +9,11 @@ setup(name='Monasca-Alarm-Cleaner',
       author_email='haaaad@gmail.com',
       url='https://github.com/Chillisystems/monasca-alarm-cleaner',
       packages=['MonascaCleaner'],
-      scripts=['monasca-alarm-cleaner.py']
+      scripts=['monasca-alarm-cleaner.py'],
+      install_requires=[
+            'shade',
+            'python-keystoneclient',
+            'python-monascaclient'
+      ]
      )
 
