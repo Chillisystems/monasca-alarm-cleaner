@@ -37,7 +37,7 @@ class MonascaCleaner(object):
                     -
         '''
         data = self.client.alarms.list()
-        vms = self._list_active_vms()
+        vms = self._list_active_vm_ids()
 
         alarm_info = []
 
@@ -52,7 +52,7 @@ class MonascaCleaner(object):
 
         return alarm_info
 
-    def _list_active_vms(self):
+    def _list_active_vm_ids(self):
         ''' Return list of active vm ids '''
         return list(server.id for server in self.cloud.nova_client.servers.list(
             search_opts={'all_tenants': 1}, limit=-1))
