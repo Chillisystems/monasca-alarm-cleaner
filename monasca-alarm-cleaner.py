@@ -21,7 +21,7 @@ def main():
     parser.add_argument('-v', action="store_true", dest="debug_flag", default=False,
                         help='Enable verbose output.')
     parser.add_argument('-a', action="store_true", dest="alarm_list_flag", default=False,
-                        help='List existing alarms.')
+                        help='List existing alarms in undetermined state.')
     parser.add_argument('-C', action="store", dest="cloud_name", required=True,
                         help='os_client_config cloud definition name like: cloud_v3_api')
     parser.add_argument('-U', action="store", dest="monasca_base_url", required=True,
@@ -37,7 +37,7 @@ def main():
                          monasca_url, args.verbose_flag, args.debug_flag)
 
     if args.alarm_list_flag:
-        print mon.client.alarms.list()
+        print mon.list_vm_undetermined_alarms()
         sys.exit(0)
     else:
         log.info("Cleaning alarms: ")
