@@ -16,9 +16,9 @@ def main():
 
     parser = argparse.ArgumentParser(description='Monasca Alarm Cleaner program')
 
-    parser.add_argument('-d', action="store_true", dest="verbose_flag", default=False,
+    parser.add_argument('-d', action="store_true", dest="debug_flag", default=False,
                         help='Enable debug output.')
-    parser.add_argument('-v', action="store_true", dest="debug_flag", default=False,
+    parser.add_argument('-v', action="store_true", dest="verbose_flag", default=False,
                         help='Enable verbose output.')
     parser.add_argument('-a', action="store_true", dest="alarm_list_flag", default=False,
                         help='List existing alarms in undetermined state.')
@@ -37,8 +37,14 @@ def main():
                          monasca_url, args.verbose_flag, args.debug_flag)
 
     if args.alarm_list_flag:
-        print mon.list_vm_undetermined_alarms()
-        sys.exit(0)
+        if args.debug_flag:
+            log.debug("List all alarms defined in monasca")
+            print mon.client.alarms.list()
+            sys.exit(0)
+        else:
+            log.info("List all alarms in undetermined state")
+            print mon.list_vm_undetermined_alarms()
+            sys.exit(0)
     else:
         log.info("Cleaning alarms: ")
         mon.clean_alarms()
