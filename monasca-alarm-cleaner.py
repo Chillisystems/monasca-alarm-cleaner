@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 '''
     Simple script for cleaning up monasca alarms left after removed/destroyed VMs.
 '''
@@ -39,11 +41,11 @@ def main():
     if args.alarm_list_flag:
         if args.debug_flag:
             log.debug("List all alarms defined in monasca")
-            print mon.client.alarms.list()
+            print(mon.client.alarms.list())
             sys.exit(0)
         else:
             log.info("List all alarms in undetermined state")
-            print mon.list_vm_undetermined_alarms()
+            print(mon.list_vm_undetermined_alarms())
             sys.exit(0)
     else:
         log.info("Cleaning alarms: ")
