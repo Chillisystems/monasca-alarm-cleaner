@@ -1,21 +1,19 @@
-import shade
 import logging
+import openstack
 
-from monascaclient import client
-import monascaclient.exc as exc
+from monascaclient import client as monasca_client
 
 log = logging.getLogger(__name__)
-
 
 class MonascaCleaner(object):
     '''
         Monasca Leftover Alarms cleaner class
     '''
     def __init__(self, cloud_name, api_version, monasca_url, verbose, debug):
-        self.cloud = shade.OpenStackCloud(cloud=cloud_name)
-        self.client = self._get_monasca_client(api_version, monasca_url, self.cloud.auth_token)
+        self.connection = openstack.connect(cloud_name)
+        self.session = self.connection.session
+        self.monasca_client = monasca_client.Client(api_version=api_version, endpoint=monasca_url, session=self.session)
         self._setup_logging(debug)
-        self._setup_verbose(verbose)
 
     def clean_alarms(self):
         ''' Remove alarms from monasca which are in UNDEERMINED state
@@ -26,7 +24,7 @@ class MonascaCleaner(object):
         for alarm in alarms_to_delete:
             log.info("Removing alarm id: %s with state %s",
                      alarm.get('alarm_id'), alarm.get('state'))
-            self.client.alarms.delete(**{'alarm_id': alarm.get('alarm_id')})
+            self.monasca_client.alarms.delete(**{'alarm_id': alarm.get('alarm_id')})
 
     def list_vm_undetermined_alarms(self):
         ''' Get list of alarms in undetermined state, if this alarm has and
@@ -36,7 +34,7 @@ class MonascaCleaner(object):
                     - test UNDETERMINED alarm for live VM
                     -
         '''
-        data = self.client.alarms.list()
+        data = self.monasca_client.alarms.list()
         vms = self._list_active_vm_ids()
 
         alarm_info = []
@@ -54,8 +52,7 @@ class MonascaCleaner(object):
 
     def _list_active_vm_ids(self):
         ''' Return list of active vm ids '''
-        return list(server.id for server in self.cloud.nova_client.servers.list(
-            search_opts={'all_tenants': 1}, limit=-1))
+        return self.connection.compute.servers(details=True, all_projects=True)
 
     @classmethod
     def _list_filter_resource_ids(cls, metrics, active_vm_ids=[]):
@@ -74,8 +71,6 @@ class MonascaCleaner(object):
                                                       resource_id not in active_vm_ids):
                 ids.append(resource_id)
         return ids
-#       return {get_dim(res, 'resource_id') for res in metrics
-#           if get_dim(res, 'component') == 'vm'}
 
     @classmethod
     def _get_monasca_client(cls, api_ver, monasca_url, auth_token):
@@ -87,8 +82,3 @@ class MonascaCleaner(object):
         logging.basicConfig(
             format="%(levelname)s (%(module)s:%(lineno)d) %(message)s",
             level=log_lvl)
-
-    @classmethod
-    def _setup_verbose(cls, verbose):
-        if verbose:
-            exc.verbose = 1
