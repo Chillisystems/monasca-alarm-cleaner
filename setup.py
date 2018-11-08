@@ -11,9 +11,8 @@ setup(name='Monasca-Alarm-Cleaner',
       packages=['MonascaCleaner'],
       scripts=['monasca-alarm-cleaner.py'],
       install_requires=[
-          'shade',
-          'python-keystoneclient',
-          'python-monascaclient'
+          'python-monascaclient>=1.10.1,<1.11',
+          'openstacksdk>=0.19.0'
       ]
      )
 
