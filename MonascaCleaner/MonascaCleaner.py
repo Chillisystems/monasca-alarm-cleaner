@@ -24,7 +24,10 @@ class MonascaCleaner(object):
         for alarm in alarms_to_delete:
             log.info("Removing alarm id: %s with state %s",
                      alarm.get('alarm_id'), alarm.get('state'))
-            self.monasca_client.alarms.delete(**{'alarm_id': alarm.get('alarm_id')})
+            try:
+                self.monasca_client.alarms.delete(**{'alarm_id': alarm.get('alarm_id')})
+            except:
+                log.info("error deleting alarm, probably already deleted")
 
     def list_vm_undetermined_alarms(self):
         ''' Get list of alarms in undetermined state, if this alarm has and
